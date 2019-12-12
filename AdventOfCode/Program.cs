@@ -38,39 +38,56 @@ namespace AdventOfCode
                 "55,59,2,6,59,63,1,63,6,67,1,67,10,71,1,71,10,75,2,9,75,79,1,5,79,83,2,9,83,87" +
                 ",1,87,9,91,2,91,13,95,1,95,9,99,1,99,6,103,2,103,6,107,1,107,5,111,1,13,111,115" +
                 ",2,115,6,119,1,119,5,123,1,2,123,127,1,6,127,0,99,2,14,0,0";
-            int[] opArray = intCode.Trim().Split(',').Select(x => int.Parse(x)).ToArray();
-            var finished = false;
-            var pc = 0;
-            while (!finished)
+            for (int noun = 0; noun < 100; noun++)
             {
-                switch (opArray[pc])
+                for (int verb = 0; verb < 100; verb++)
                 {
-                    case 1:
-                        var addend1Address = opArray[pc + 1];
-                        var addend2Address = opArray[pc + 2];
-                        var sumAddress = opArray[pc + 3];
-                        opArray[sumAddress] = opArray[addend1Address] + opArray[addend2Address];
-                        pc += 4;
-                        break;
-                    case 2:
-                        var factor1Address = opArray[pc + 1];
-                        var factor2Address = opArray[pc + 2];
-                        var productAddress = opArray[pc + 3];
-                        opArray[productAddress] = opArray[factor1Address] * opArray[factor2Address];
-                        pc += 4;
-                        break;
-                    case 99:
-                        finished = true;
-                        break;
-                    default:
-                        throw new Exception("Unknown opcode");
+                    int[] opArray = intCode.Trim().Split(',').Select(x => int.Parse(x)).ToArray();
+                    opArray[1] = noun;
+                    opArray[2] = verb;
+                    var finished = false;
+                    var pc = 0;
+                    while (!finished)
+                    {
+                        switch (opArray[pc])
+                        {
+                            case 1:
+                                var addend1Address = opArray[pc + 1];
+                                var addend2Address = opArray[pc + 2];
+                                var sumAddress = opArray[pc + 3];
+                                opArray[sumAddress] = opArray[addend1Address] + opArray[addend2Address];
+                                pc += 4;
+                                break;
+                            case 2:
+                                var factor1Address = opArray[pc + 1];
+                                var factor2Address = opArray[pc + 2];
+                                var productAddress = opArray[pc + 3];
+                                opArray[productAddress] = opArray[factor1Address] * opArray[factor2Address];
+                                pc += 4;
+                                break;
+                            case 99:
+                                finished = true;
+                                break;
+                            default:
+                                throw new Exception("Unknown opcode");
+                        }
+                    }
+                    if(opArray[0] == 19690720)
+                    {
+                        printComputerOutput(opArray);
+                        return;
+                    }
                 }
             }
-            foreach(var op in opArray)
+        }
+        private static void printComputerOutput(int[] opArray)
+        {
+            foreach (var op in opArray)
             {
                 Console.Write($"{op}, ");
             }
             Console.ReadLine();
+            return;
         }
     }
 }

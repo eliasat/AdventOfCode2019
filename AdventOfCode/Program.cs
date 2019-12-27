@@ -10,7 +10,65 @@ namespace AdventOfCode
         {
             //DayOne();
             //DayTwo();
-            DayThree();
+            //DayThree();
+            DayFour();
+        }
+        private static void DayFour()
+        {
+            // 10^5
+            // never decrease
+            var ctr = 0;
+            for (int i = 171309; i <= 643603; i++)
+            {
+                if (containsAdjacentDigit(i) && noDecreasingDigit(i))
+                {
+                    ctr++;
+                }
+            }
+            Console.WriteLine(ctr);
+        }
+        private static bool noDecreasingDigit(int number)
+        {
+            var cArray = number.ToString().ToCharArray();
+            var prevC = 10;
+            foreach (var c in cArray)
+            {
+                if (c < prevC)
+                {
+                    return false;
+                }
+                prevC = c;
+            }
+            return true;
+        }
+        private static bool containsAdjacentDigit(int number)
+        {
+            var cArray = number.ToString().ToCharArray();
+            foreach (var c in cArray)
+            {
+                var indeces = getAllIndexes(cArray, c);
+                foreach (var index in indeces)
+                {
+                    if ((indeces.Contains(index - 1) && !indeces.Contains(index - 2) && !indeces.Contains(index + 1))
+                        || (indeces.Contains(index + 1) && !indeces.Contains(index + 2) && !indeces.Contains(index - 1)))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        private static List<int> getAllIndexes(char[] arr, char c)
+        {
+            var result = new List<int>();
+            for (var i = 0; i < arr.Length; i++)
+            {
+                if (arr[i] == c)
+                {
+                    result.Add(i);
+                }
+            }
+            return result;
         }
         private static void DayOne()
         {
@@ -139,8 +197,8 @@ namespace AdventOfCode
                     var yIntersections = Range(lineA.Start.Y, lineA.End.Y).Intersect(Range(lineB.Start.Y, lineB.End.Y));
                     if (xIntersections.Any() && yIntersections.Any())
                     {
-                        (int x, int y, int steps) intersect = (xIntersections.First(), yIntersections.First(), lineAStepSum + lineBStepSum );
-                        if(lineA.Start.X == lineA.End.X)
+                        (int x, int y, int steps) intersect = (xIntersections.First(), yIntersections.First(), lineAStepSum + lineBStepSum);
+                        if (lineA.Start.X == lineA.End.X)
                         {
                             intersect.steps += Math.Abs(yIntersections.First() - lineA.Start.Y);
                             intersect.steps += Math.Abs(xIntersections.First() - lineB.Start.X);

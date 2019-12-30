@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Resources;
 namespace AdventOfCode
 {
     class Program
@@ -12,9 +13,93 @@ namespace AdventOfCode
             //DayTwo();
             //DayThree();
             //DayFour()
-            DayFive();
+            //DayFive();
+            DaySix();
         }
 
+        private static void DaySix()
+        {
+            var orbits = File.ReadAllLines(@"C:\Users\Administrator\source\repos\AdventOfCode\AdventOfCode\Input\daysix_input");
+            var root = new Node("COM");
+            addChildren(root, orbits);
+            var edges = CountDirectEdges(root);
+            var undirectEdges = CountIndirectEdges(root);
+            Console.WriteLine("Total amount of edges: " + (edges + undirectEdges));
+            var startParentList = getParentList("YOU", new List<string>(), root);
+            var endParentList = getParentList("SAN", new List<string>(), root);
+            var minDist = startParentList.Count + endParentList.Count - (2 * startParentList.Intersect(endParentList).Count());
+        }
+
+        private static List<string> getParentList(string val, List<string> parents, Node node)
+        {
+            if (val.Equals(node.Value, StringComparison.Ordinal))
+            {
+                return parents;
+            }
+            parents.Add(node.Value);
+            foreach (var child in node.Children)
+            {
+                var tempList = getParentList(val, new List<string>(parents), child);
+                if(tempList.Count > 0)
+                {
+                    return tempList;
+                }
+            }
+            return new List<string>();
+        }
+
+        private static void addChildren(Node parent, string[] nodes)
+        {
+            foreach (var node in nodes)
+            {
+                var iteratorParentName = node.Split(')')[0];
+                var iteratorChildName = node.Split(')')[1];
+                if (parent.Value.Equals(iteratorParentName, StringComparison.Ordinal))
+                {
+                    var child = new Node(iteratorChildName);
+                    parent.Children.Add(child);
+                    addChildren(child, nodes);
+                }
+            }
+            return;
+        }
+        private static int CountDirectEdges(Node root)
+        {
+            var ctr = root.Children.Count;
+            foreach (var child in root.Children)
+            {
+                ctr += CountDirectEdges(child);
+            }
+            return ctr;
+        }
+        private static int CountIndirectEdges(Node root)
+        {
+            var ctr = 0;
+            foreach (var child in root.Children)
+            {
+                ctr += CountDirectEdges(child);
+                ctr += CountIndirectEdges(child);
+            }
+            return ctr;
+        }
+        class Node
+        {
+            public string Value { get; set; }
+            public List<Node> Children { get; set; } = new List<Node>();
+            public Node()
+            {
+
+            }
+            public Node(string value)
+            {
+                this.Value = value;
+            }
+            public override string ToString()
+            {
+                var st = this.Value +'\n';
+                return st;
+            }
+        }
         enum ParameterMode
         {
             Position,
